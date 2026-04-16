@@ -1,0 +1,8 @@
+{
+  "server": {
+    "port": 80
+  },
+  "db": {
+    "mongoUri": "mongodb://localhost:27017/we2-mongo"
+  }
+}

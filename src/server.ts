@@ -19,7 +19,7 @@ app.get("/api/users", (req: Request, res: Response) => {
   ]);
 });
 
-app.post("/api/users", (req: Request, res: Response) => {
+app.post("/api/publicUsers", (req: Request, res: Response) => {
   const { name } = req.body;
 
   if (!name) {
@@ -28,7 +28,8 @@ app.post("/api/users", (req: Request, res: Response) => {
 
   const newUser = {
     id: Date.now(),
-    name,
+    firstName: name.split(" ")[0],
+    lastName: name.split(" ")[1] || "",
   };
 
   res.status(201).json(newUser);
