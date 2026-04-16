@@ -1,40 +1,24 @@
-import express, { Request, Response } from "express";
-import dotenv from "dotenv";
-
-dotenv.config();
+import express from "express";
+import config from "config";
+import { connectDatabase } from "./database/mongoose";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
+app.use(express.json()); // registers middleware to parse json bodies and gives access to req.body in the routes
 
-app.get("/", (req: Request, res: Response) => {
-  res.json({ message: "Bens Server is running" });
+const port = config.get<number>("server.port");
+
+app.get("/", (req, res) => {
+  res.json({ message: "Ben's Server is running" });
 });
 
-app.get("/api/users", (req: Request, res: Response) => {
-  res.json([
-    { id: 1, name: "Ben" },
-    { id: 2, name: "Alice" },
-  ]);
-});
+async function startServer() {
+  // connection to server (async) after awaiting the database connection
+  await connectDatabase();
 
-app.post("/api/publicUsers", (req: Request, res: Response) => {
-  const { name } = req.body;
+  app.listen(port, () => {
+    console.log(`Server running on http://127.0.0.1:${port}`);
+  });
+}
 
-  if (!name) {
-    return res.status(400).json({ error: "Name is required" });
-  }
-
-  const newUser = {
-    id: Date.now(),
-    firstName: name.split(" ")[0],
-    lastName: name.split(" ")[1] || "",
-  };
-
-  res.status(201).json(newUser);
-});
-
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+startServer();
