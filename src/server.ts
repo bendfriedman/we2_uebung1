@@ -1,12 +1,15 @@
 import express from "express";
 import config from "config";
 import { connectDatabase } from "./database/mongoose";
+import publicUsersRoute from "./endpoints/user/PublicUsersRoute";
 
 const app = express();
 
 app.use(express.json()); // registers middleware to parse json bodies and gives access to req.body in the routes
 
 const port = config.get<number>("server.port");
+
+app.use("/api/public-users", publicUsersRoute);
 
 app.get("/", (req, res) => {
   res.json({ message: "Ben's Server is running" });

@@ -8,7 +8,7 @@ export interface IPublicUser extends Document {
   istAdministrator: boolean;
 }
 
-const PublicUserSchema: Schema<IPublicUser> = new Schema({
+const publicUserSchema: Schema<IPublicUser> = new Schema({
   userID: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   firstName: { type: String, required: true },
@@ -16,4 +16,7 @@ const PublicUserSchema: Schema<IPublicUser> = new Schema({
   istAdministrator: { type: Boolean, required: true },
 });
 
-export const PublicUser: Model<IPublicUser> = mongoose.model<IPublicUser>("PublicUser", PublicUserSchema);
+export const PublicUser: Model<IPublicUser> = mongoose.model<IPublicUser>(
+  "PublicUser",
+  publicUserSchema,
+);
