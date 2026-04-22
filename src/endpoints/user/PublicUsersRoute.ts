@@ -1,35 +1,100 @@
 import express, { Request, Response } from "express";
-import { PublicUser } from "./UserModel";
+import { IPublicUser } from "./UserModel";
+import {
+  createUser,
+  deleteUser,
+  getAllUsers,
+  getUserByUserID,
+  updateUser,
+} from "./publicUsersService";
+import { mapUser } from "./UserMapper";
 
 const router = express.Router();
 
 router.get("/", async (req: Request, res: Response) => {
   try {
-    const users = await PublicUser.find();
-    console.log("users:", users);
-    res.status(200).json(users);
+    const users: IPublicUser[] = await getAllUsers();
+
+    res.status(200).json(users.map(mapUser));
   } catch (error) {
-    res.status(500).json({ Error: "Failed to load users." });
+    res.status(500).json({ Error: "Failed to get users!!" });
+  }
+});
+
+router.get("/:userID", async (req: Request, res: Response) => {
+  try {
+    const userID: string = req.params.userID as string;
+    const user: IPublicUser | null = await getUserByUserID(userID);
+
+    if (!user) return res.status(404).json({ Error: "User not found!" });
+
+    res.status(200).json(mapUser(user));
+  } catch (error) {
+    res.status(500).json({ Error: "Failed to get user!" });
   }
 });
 
 router.post("/", async (req: Request, res: Response) => {
   try {
-    const { userID, password, firstName, lastName, istAdministrator } =
-      req.body;
+    const { userID, password, firstName, lastName, isAdministrator } = req.body;
 
-    const newUser = new PublicUser({
+    if (!userID || !password)
+      return res
+        .status(400)
+        .json({ error: "user id and password are required!" });
+
+    const existingUser: IPublicUser | null = await getUserByUserID(userID);
+    if (existingUser)
+      return res.status(400).json({ Error: "UserID already exists!" });
+
+    const newUser: IPublicUser = await createUser({
       userID,
       password,
       firstName,
       lastName,
-      istAdministrator,
+      isAdministrator,
     });
 
-    await newUser.save();
-    res.status(201).json(newUser);
+    res.status(201).json(mapUser(newUser)); //201 created
   } catch (error) {
-    res.status(500).json({ Error: "Failed to create user." });
+    res.status(500).json({ Error: "Failed to create user!" });
+  }
+});
+
+router.put("/:userID", async (req: Request, res: Response) => {
+  try {
+    const { password, firstName, lastName, isAdministrator } = req.body;
+    const userID: string = req.params.userID as string;
+
+    if ("userID" in req.body)
+      return res.status(400).json({
+        Error: "userID not allowed in body as it cannot be changed!",
+      });
+
+    const updatedUser: IPublicUser | null = await updateUser(userID, {
+      password,
+      firstName,
+      lastName,
+      isAdministrator,
+    });
+
+    if (!updatedUser) return res.status(404).json({ Error: "User not found!" });
+
+    res.status(200).json(mapUser(updatedUser));
+  } catch (error) {
+    res.status(500).json({ Error: "Failed to update user!" });
+  }
+});
+
+router.delete("/:userID", async (req: Request, res: Response) => {
+  try {
+    const userID: string = req.params.userID as string;
+    const deletedUser: IPublicUser | null = await deleteUser(userID);
+    if (!deletedUser) return res.status(404).json({ Error: "User not found!" });
+
+    res.status(200).json(mapUser(deletedUser));
+  } catch (error) {
+    res.status(500).json({ Error: "Failed to delete user!" });
   }
 });
 

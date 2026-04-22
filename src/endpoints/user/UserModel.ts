@@ -5,15 +5,15 @@ export interface IPublicUser extends Document {
   password: string;
   firstName: string;
   lastName: string;
-  istAdministrator: boolean;
+  isAdministrator: boolean;
 }
 
 const publicUserSchema: Schema<IPublicUser> = new Schema({
   userID: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
-  istAdministrator: { type: Boolean, required: true },
+  firstName: { type: String, required: false },
+  lastName: { type: String, required: false },
+  isAdministrator: { type: Boolean, required: false, default: false },
 });
 
 export const PublicUser: Model<IPublicUser> = mongoose.model<IPublicUser>(
