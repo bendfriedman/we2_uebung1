@@ -3,9 +3,9 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 export interface IPublicUser extends Document {
   userID: string;
   password: string;
-  firstName: string;
-  lastName: string;
-  isAdministrator: boolean;
+  firstName?: string;
+  lastName?: string;
+  isAdministrator?: boolean;
 }
 
 const publicUserSchema: Schema<IPublicUser> = new Schema({
@@ -16,7 +16,4 @@ const publicUserSchema: Schema<IPublicUser> = new Schema({
   isAdministrator: { type: Boolean, required: false, default: false },
 });
 
-export const PublicUser: Model<IPublicUser> = mongoose.model<IPublicUser>(
-  "PublicUser",
-  publicUserSchema,
-);
+export const PublicUser: Model<IPublicUser> = mongoose.model<IPublicUser>("PublicUser", publicUserSchema);

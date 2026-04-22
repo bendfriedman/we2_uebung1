@@ -6,7 +6,7 @@ export interface PublicUserResponse {
   password: string;
   firstName?: string;
   lastName?: string;
-  isAdministrator: boolean;
+  isAdministrator?: boolean;
 }
 
 export function mapUser(user: IPublicUser): PublicUserResponse {
