@@ -1,6 +1,12 @@
 import express, { Request, Response } from "express";
 import { IPublicUser } from "./UserModel";
-import { createUser, deleteUser, getAllUsers, getUserByUserID, updateUser } from "./PublicUsersService";
+import {
+  createUser,
+  deleteUser,
+  getAllUsers,
+  getUserByUserID,
+  updateUser,
+} from "./PublicUsersService";
 import { mapUser } from "./UserMapper";
 
 const router = express.Router();
@@ -32,10 +38,14 @@ router.post("/", async (req: Request, res: Response) => {
   try {
     const { userID, password, firstName, lastName, isAdministrator } = req.body;
 
-    if (!userID || !password) return res.status(400).json({ error: "user id and password are required!" });
+    if (!userID || !password)
+      return res
+        .status(400)
+        .json({ error: "user id and password are required!" });
 
     const existingUser: IPublicUser | null = await getUserByUserID(userID);
-    if (existingUser) return res.status(400).json({ Error: "UserID already exists!" });
+    if (existingUser)
+      return res.status(400).json({ Error: "UserID already exists!" });
 
     const newUser: IPublicUser = await createUser({
       userID,
