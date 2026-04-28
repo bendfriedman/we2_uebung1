@@ -41,11 +41,13 @@ export async function updateUser(
   // }
 
   const user: IPublicUser | null = await getUserByUserID(userID);
+  if(!user) return null;
 
-  return await PublicUser.findOneAndUpdate({ userID }, updateData, {
-    new: true, // returns updated user instead of the older version of the user
-    runValidators: true, // checks my schema and validates requirements
-  });
+  Object.assign(user, updateData);
+  await user.save();
+
+
+  return user;
 }
 
 export async function deleteUser(userID: string): Promise<IPublicUser | null> {
