@@ -48,3 +48,45 @@ GET http://localhost/api/publicUsers
 // Lösche den User mit der User-ID manfred
 ###
 DELETE  http://localhost/api/publicUsers/manfred
+
+// Lösche den User mit der User-ID
+###
+DELETE  http://localhost/api/publicUsers/karotteeee
+
+//
+###
+POST http://localhost/api/publicUsers
+Content-Type: application/json
+
+{
+    "userID": "7",
+    "firstName": "max",
+    "lastName": "mustermann",
+    "password": "1234pizzakarotte"
+    
+}
+
+//
+###
+PUT http://localhost/api/publicUsers/7
+Content-Type: application/json
+
+{
+    "firstName": "malina",
+    "lastName": "berghaus",
+    "password": "bht",
+    "isAdministrator": "true",
+    "badehose": "true"
+}
+
+//create user without providing a password
+###
+POST http://localhost/api/publicUsers
+Content-Type: application/json
+
+{
+    "userID": "test",
+    "firstName": "maria",
+    "lastName": "musterfrau",
+    
+}
