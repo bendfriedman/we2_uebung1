@@ -1,13 +1,11 @@
 import express, { Request, Response } from "express";
 import { IPublicUser } from "./UserModel";
-import {
-  createUser,
-  deleteUser,
-  getAllUsers,
-  getUserByUserID,
-  updateUser,
-} from "./PublicUsersService";
+import { createUser, deleteUser, getAllUsers, getUserByUserID, updateUser } from "./PublicUsersService";
 import { mapUser } from "./UserMapper";
+import { NotFoundError } from "../../errors/NotFoundError";
+import { DuplicateError } from "../../errors/DuplicateError";
+import { MissingInfoError } from "../../errors/MissingInfoError";
+import { WrongInfoError } from "../../errors/WrongInfoError";
 
 const router = express.Router();
 
@@ -24,64 +22,45 @@ router.get("/", async (req: Request, res: Response) => {
 router.get("/:userID", async (req: Request, res: Response) => {
   try {
     const userID: string = req.params.userID as string;
-    const user: IPublicUser | null = await getUserByUserID(userID);
-
-    if (!user) return res.status(404).json({ Error: "User not found!" });
+    const user: IPublicUser = await getUserByUserID(userID);
 
     res.status(200).json(mapUser(user));
-  } catch (error) {
-    res.status(500).json({ Error: "Failed to get user!" });
+  } catch (error: any) {
+    if (error instanceof NotFoundError) {
+      return res.status(error.statusCode).json({ Error: error.message });
+    }
+
+    res.status(500).json({ Error: "Failed to get user!!" });
   }
 });
 
 router.post("/", async (req: Request, res: Response) => {
   try {
-    const { userID, password, firstName, lastName, isAdministrator } = req.body;
+    const newUser: IPublicUser = await createUser(req.body);
 
-    if (!userID || !password)
-      return res
-        .status(400)
-        .json({ error: "user id and password are required!" });
-
-    const existingUser: IPublicUser | null = await getUserByUserID(userID);
-    if (existingUser)
-      return res.status(400).json({ Error: "UserID already exists!" });
-
-    const newUser: IPublicUser = await createUser({
-      userID,
-      password,
-      firstName,
-      lastName,
-      isAdministrator,
-    });
-
-    res.status(201).json(mapUser(newUser)); //201 created
+    res.status(201).json(mapUser(newUser));
   } catch (error) {
+    if (error instanceof DuplicateError || error instanceof MissingInfoError) {
+      return res.status(error.statusCode).json({ Error: error.message });
+    }
+
     res.status(500).json({ Error: "Failed to create user!" });
   }
 });
 
 router.put("/:userID", async (req: Request, res: Response) => {
   try {
-    const { password, firstName, lastName, isAdministrator } = req.body;
     const userID: string = req.params.userID as string;
-
-    if ("userID" in req.body)
-      return res.status(400).json({
-        Error: "userID not allowed in body as it cannot be changed!",
-      });
-
-    const updatedUser: IPublicUser | null = await updateUser(userID, {
-      password,
-      firstName,
-      lastName,
-      isAdministrator,
-    });
-
-    if (!updatedUser) return res.status(404).json({ Error: "User not found!" });
+    const updatedUser: IPublicUser = await updateUser(userID, req.body);
 
     res.status(200).json(mapUser(updatedUser));
   } catch (error) {
+    if (error instanceof WrongInfoError) {
+      return res.status(error.statusCode).json({ Error: error.message });
+    }
+    if (error instanceof NotFoundError) {
+      return res.status(error.statusCode).json({ Error: error.message });
+    }
     res.status(500).json({ Error: "Failed to update user!" });
   }
 });
@@ -89,11 +68,13 @@ router.put("/:userID", async (req: Request, res: Response) => {
 router.delete("/:userID", async (req: Request, res: Response) => {
   try {
     const userID: string = req.params.userID as string;
-    const deletedUser: IPublicUser | null = await deleteUser(userID);
-    if (!deletedUser) return res.status(404).json({ Error: "User not found!" });
+    const deletedUser: IPublicUser = await deleteUser(userID);
 
     res.status(200).json(mapUser(deletedUser));
   } catch (error) {
+    if (error instanceof NotFoundError) {
+      return res.status(error.statusCode).json({ Error: error.message });
+    }
     res.status(500).json({ Error: "Failed to delete user!" });
   }
 });

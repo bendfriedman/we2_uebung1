@@ -43,7 +43,7 @@ Content-Type: application/json
 
 // Rufe alle User ab. Es sollten 2 User zurückgegeben werden.
 ###
-GET http://localhost/api/publicUsers
+GET http://localhost/api/publicUsers/
 
 // Lösche den User mit der User-ID manfred
 ###
@@ -51,7 +51,7 @@ DELETE  http://localhost/api/publicUsers/manfred
 
 // Lösche den User mit der User-ID
 ###
-DELETE  http://localhost/api/publicUsers/karotteeee
+DELETE  http://localhost/api/publicUsers/karotteeeeeeee
 
 //
 ###
@@ -59,16 +59,16 @@ POST http://localhost/api/publicUsers
 Content-Type: application/json
 
 {
-    "userID": "7",
-    "firstName": "max",
-    "lastName": "mustermann",
+    "userID": "8",
+    "firstName": "been",
+    "lastName": "musterm",
     "password": "1234pizzakarotte"
     
 }
 
 //
 ###
-PUT http://localhost/api/publicUsers/7
+PUT http://localhost/api/publicUsers/admin
 Content-Type: application/json
 
 {
@@ -90,3 +90,7 @@ Content-Type: application/json
     "lastName": "musterfrau",
     
 }
+
+// get user that doesnt exist
+###
+GET http://localhost/api/publicUsers/99
