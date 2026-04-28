@@ -9,10 +9,13 @@ const app = express();
 app.use(express.json()); // registers middleware to parse json bodies and gives access to req.body in the routes
 
 app.use("/api/publicUsers", publicUsersRoute);
-//TODO: add a route to handle invalid endpoints for 404
 
 app.get("/", (req, res) => {
   res.json({ message: "Ben's Server is running" });
+});
+
+app.use((req, res) => {
+  res.status(404).json({ Error: "No such endpoint found!" });
 });
 
 async function startServer() {

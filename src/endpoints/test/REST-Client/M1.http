@@ -94,3 +94,7 @@ Content-Type: application/json
 // get user that doesnt exist
 ###
 GET http://localhost/api/publicUsers/99
+
+// falscher endpoint
+###
+GET http://localhost/api/publicUsersssssss
