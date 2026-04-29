@@ -4,5 +4,9 @@
   },
   "db": {
     "mongoUri": "mongodb://127.0.0.1:27017/we2-mongo"
+  },
+  "session": {
+    "tokenKey": "NEVER-USE-IN-PRODUCTION",
+    "timeout": 3600
   }
 }

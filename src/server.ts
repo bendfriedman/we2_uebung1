@@ -1,8 +1,12 @@
+import "dotenv/config";
 import express from "express";
 import config from "config";
 import { connectDatabase } from "./database/mongoose";
 import publicUsersRoute from "./endpoints/user/PublicUsersRoute";
 import morgan from "morgan";
+import { createUser, userExists } from "./endpoints/user/UserService";
+
+console.log("tokenKey:", config.get<string>("session.tokenKey"));
 
 const port = config.get<number>("server.port");
 
@@ -22,6 +26,18 @@ app.use((req, res) => {
 async function startServer() {
   // connection to server (async) after awaiting the database connection
   await connectDatabase();
+
+  try {
+    if (!(await userExists("admin"))) {
+      await createUser({
+        userID: "admin",
+        password: "admin",
+        isAdministrator: true,
+      });
+    }
+  } catch (error) {
+    throw new Error("Failed to create admin user!!");
+  }
 
   app.listen(port, () => {
     console.log(`Server running on http://127.0.0.1:${port}`);

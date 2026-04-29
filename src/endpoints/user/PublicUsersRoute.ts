@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { IPublicUser } from "./UserModel";
+import { IUser } from "./UserModel";
 import {
   createUser,
   deleteAllUsers,
@@ -7,8 +7,8 @@ import {
   getAllUsers,
   getUserByUserID,
   updateUser,
-} from "./PublicUsersService";
-import { mapUser } from "./UserMapper";
+} from "./UserService";
+import { mapPublicUser } from "./UserMapper";
 import { NotFoundError } from "../../errors/NotFoundError";
 import { DuplicateError } from "../../errors/DuplicateError";
 import { MissingInfoError } from "../../errors/MissingInfoError";
@@ -18,9 +18,9 @@ const router = express.Router();
 
 router.get("/", async (req: Request, res: Response) => {
   try {
-    const users: IPublicUser[] = await getAllUsers();
+    const users: IUser[] = await getAllUsers();
 
-    res.status(200).json(users.map(mapUser));
+    res.status(200).json(users.map(mapPublicUser));
   } catch (error) {
     res.status(500).json({ Error: "Failed to get users!!" });
   }
@@ -29,9 +29,9 @@ router.get("/", async (req: Request, res: Response) => {
 router.get("/:userID", async (req: Request, res: Response) => {
   try {
     const userID: string = req.params.userID as string;
-    const user: IPublicUser = await getUserByUserID(userID);
+    const user: IUser = await getUserByUserID(userID);
 
-    res.status(200).json(mapUser(user));
+    res.status(200).json(mapPublicUser(user));
   } catch (error: any) {
     if (error instanceof NotFoundError) {
       return res.status(error.statusCode).json({ Error: error.message });
@@ -43,9 +43,9 @@ router.get("/:userID", async (req: Request, res: Response) => {
 
 router.post("/", async (req: Request, res: Response) => {
   try {
-    const newUser: IPublicUser = await createUser(req.body);
+    const newUser: IUser = await createUser(req.body);
 
-    res.status(201).json(mapUser(newUser));
+    res.status(201).json(mapPublicUser(newUser));
   } catch (error) {
     if (error instanceof DuplicateError || error instanceof MissingInfoError) {
       return res.status(error.statusCode).json({ Error: error.message });
@@ -58,9 +58,9 @@ router.post("/", async (req: Request, res: Response) => {
 router.put("/:userID", async (req: Request, res: Response) => {
   try {
     const userID: string = req.params.userID as string;
-    const updatedUser: IPublicUser = await updateUser(userID, req.body);
+    const updatedUser: IUser = await updateUser(userID, req.body);
 
-    res.status(200).json(mapUser(updatedUser));
+    res.status(200).json(mapPublicUser(updatedUser));
   } catch (error) {
     if (error instanceof WrongInfoError) {
       return res.status(error.statusCode).json({ Error: error.message });
@@ -75,9 +75,9 @@ router.put("/:userID", async (req: Request, res: Response) => {
 router.delete("/:userID", async (req: Request, res: Response) => {
   try {
     const userID: string = req.params.userID as string;
-    const deletedUser: IPublicUser = await deleteUser(userID);
+    const deletedUser: IUser = await deleteUser(userID);
 
-    res.status(200).json(mapUser(deletedUser));
+    res.status(200).json(mapPublicUser(deletedUser));
   } catch (error) {
     if (error instanceof NotFoundError) {
       return res.status(error.statusCode).json({ Error: error.message });

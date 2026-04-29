@@ -2,21 +2,21 @@ import { DuplicateError } from "../../errors/DuplicateError";
 import { MissingInfoError } from "../../errors/MissingInfoError";
 import { NotFoundError } from "../../errors/NotFoundError";
 import { WrongInfoError } from "../../errors/WrongInfoError";
-import { IPublicUser, PublicUser } from "./UserModel";
+import { IUser, User } from "./UserModel";
 
-export async function getAllUsers(): Promise<IPublicUser[]> {
-  return await PublicUser.find();
+export async function getAllUsers(): Promise<IUser[]> {
+  return await User.find();
 }
 
-export async function getUserByUserID(userID: string): Promise<IPublicUser> {
-  const user = await PublicUser.findOne({ userID });
+export async function getUserByUserID(userID: string): Promise<IUser> {
+  const user = await User.findOne({ userID });
   if (!user) throw new NotFoundError(`User with id ${userID} not found!`);
 
   return user;
 }
 
-async function userExists(userID: string): Promise<boolean> {
-  const user = await PublicUser.findOne({ userID });
+export async function userExists(userID: string): Promise<boolean> {
+  const user = await User.findOne({ userID });
   return user !== null;
 }
 
@@ -26,7 +26,7 @@ export async function createUser(userData: {
   firstName?: string;
   lastName?: string;
   isAdministrator?: boolean;
-}): Promise<IPublicUser> {
+}): Promise<IUser> {
   const userID = userData.userID;
   const password = userData.password;
 
@@ -37,7 +37,7 @@ export async function createUser(userData: {
   if (await userExists(userID))
     throw new DuplicateError(`User with ID ${userID} already exists!!!!`);
 
-  const newUser = new PublicUser(userData);
+  const newUser = new User(userData);
 
   return await newUser.save();
 }
@@ -50,14 +50,14 @@ export async function updateUser(
     lastName?: string;
     isAdministrator?: boolean;
   },
-): Promise<IPublicUser> {
+): Promise<IUser> {
   if ("userID" in updateData) {
     throw new WrongInfoError(
       "user id not allowed in body as it cannot be changed!",
     );
   }
 
-  const user: IPublicUser = await getUserByUserID(userID);
+  const user: IUser = await getUserByUserID(userID);
 
   Object.assign(user, updateData);
   await user.save();
@@ -65,8 +65,8 @@ export async function updateUser(
   return user;
 }
 
-export async function deleteUser(userID: string): Promise<IPublicUser> {
-  const user: IPublicUser | null = await PublicUser.findOneAndDelete({
+export async function deleteUser(userID: string): Promise<IUser> {
+  const user: IUser | null = await User.findOneAndDelete({
     userID,
   });
   if (!user) throw new NotFoundError(`User with ID ${userID} not found!`);
@@ -75,5 +75,5 @@ export async function deleteUser(userID: string): Promise<IPublicUser> {
 }
 
 export async function deleteAllUsers(): Promise<void> {
-  await PublicUser.deleteMany({});
+  await User.deleteMany({});
 }

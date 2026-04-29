@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 import bcrypt from "bcryptjs";
 
-export interface IPublicUser extends Document {
+export interface IUser extends Document {
   userID: string;
   password: string;
   firstName?: string;
@@ -9,7 +9,7 @@ export interface IPublicUser extends Document {
   isAdministrator?: boolean;
 }
 
-const publicUserSchema: Schema<IPublicUser> = new Schema({
+const userSchema: Schema<IUser> = new Schema({
   userID: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   firstName: { type: String, required: false },
@@ -19,14 +19,11 @@ const publicUserSchema: Schema<IPublicUser> = new Schema({
 
 const SALT = 10;
 
-publicUserSchema.pre("save", async function (this: IPublicUser) {
+userSchema.pre("save", async function (this: IUser) {
   if (!this.isModified("password")) {
     return;
   }
   this.password = await bcrypt.hash(this.password, SALT);
 });
 
-export const PublicUser: Model<IPublicUser> = mongoose.model<IPublicUser>(
-  "PublicUser",
-  publicUserSchema,
-);
+export const User: Model<IUser> = mongoose.model<IUser>("User", userSchema);
