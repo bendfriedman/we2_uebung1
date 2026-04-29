@@ -20,7 +20,7 @@ const publicUserSchema: Schema<IPublicUser> = new Schema({
 const SALT = 10;
 
 publicUserSchema.pre("save", async function (this: IPublicUser) {
-  if (!this.isModified) {
+  if (!this.isModified("password")) {
     return;
   }
   this.password = await bcrypt.hash(this.password, SALT);

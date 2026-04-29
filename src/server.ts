@@ -8,7 +8,7 @@ const port = config.get<number>("server.port");
 
 const app = express();
 app.use(express.json()); // registers middleware to parse json bodies and gives access to req.body in the routes
-app.use(morgan("dev"));
+app.use(morgan("dev")); // registers morgan middleware to log incoming requests in the console in dev format (method, url, status code, response time)
 app.use("/api/publicUsers", publicUsersRoute);
 
 app.get("/", (req, res) => {
