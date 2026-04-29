@@ -1,6 +1,13 @@
 import express, { Request, Response } from "express";
 import { IPublicUser } from "./UserModel";
-import { createUser, deleteUser, getAllUsers, getUserByUserID, updateUser } from "./PublicUsersService";
+import {
+  createUser,
+  deleteAllUsers,
+  deleteUser,
+  getAllUsers,
+  getUserByUserID,
+  updateUser,
+} from "./PublicUsersService";
 import { mapUser } from "./UserMapper";
 import { NotFoundError } from "../../errors/NotFoundError";
 import { DuplicateError } from "../../errors/DuplicateError";
@@ -78,5 +85,17 @@ router.delete("/:userID", async (req: Request, res: Response) => {
     res.status(500).json({ Error: "Failed to delete user!" });
   }
 });
+
+if (process.env.NODE_ENV === "development") {
+  //!!!only usable in development mode to prevent accidental deletion of all users in production!!!
+  router.delete("/", async (req: Request, res: Response) => {
+    try {
+      await deleteAllUsers();
+      res.status(200).json({ Success: "All users deleted" });
+    } catch (error: any) {
+      res.status(500).json({ Error: "Failed to delete all users!" });
+    }
+  });
+}
 
 export default router;
