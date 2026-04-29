@@ -2,12 +2,13 @@ import express from "express";
 import config from "config";
 import { connectDatabase } from "./database/mongoose";
 import publicUsersRoute from "./endpoints/user/PublicUsersRoute";
+import morgan from "morgan";
 
 const port = config.get<number>("server.port");
 
 const app = express();
 app.use(express.json()); // registers middleware to parse json bodies and gives access to req.body in the routes
-
+app.use(morgan("dev"));
 app.use("/api/publicUsers", publicUsersRoute);
 
 app.get("/", (req, res) => {

@@ -87,7 +87,7 @@ Content-Type: application/json
 {
     "userID": "test",
     "firstName": "maria",
-    "lastName": "musterfrau",
+    "lastName": "musterfrau"
     
 }
 
