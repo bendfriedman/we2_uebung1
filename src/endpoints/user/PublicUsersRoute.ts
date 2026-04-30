@@ -21,7 +21,7 @@ router.get("/", async (req: Request, res: Response) => {
     const users: IUser[] = await getAllUsers();
 
     res.status(200).json(users.map(mapPublicUser));
-  } catch (error) {
+  } catch (error: unknown) {
     res.status(500).json({ Error: "Failed to get users!!" });
   }
 });
@@ -32,7 +32,7 @@ router.get("/:userID", async (req: Request, res: Response) => {
     const user: IUser = await getUserByUserID(userID);
 
     res.status(200).json(mapPublicUser(user));
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof NotFoundError) {
       return res.status(error.statusCode).json({ Error: error.message });
     }
@@ -46,7 +46,7 @@ router.post("/", async (req: Request, res: Response) => {
     const newUser: IUser = await createUser(req.body);
 
     res.status(201).json(mapPublicUser(newUser));
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof DuplicateError || error instanceof MissingInfoError) {
       return res.status(error.statusCode).json({ Error: error.message });
     }
@@ -61,7 +61,7 @@ router.put("/:userID", async (req: Request, res: Response) => {
     const updatedUser: IUser = await updateUser(userID, req.body);
 
     res.status(200).json(mapPublicUser(updatedUser));
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof WrongInfoError) {
       return res.status(error.statusCode).json({ Error: error.message });
     }
@@ -75,10 +75,10 @@ router.put("/:userID", async (req: Request, res: Response) => {
 router.delete("/:userID", async (req: Request, res: Response) => {
   try {
     const userID: string = req.params.userID as string;
-    const deletedUser: IUser = await deleteUser(userID);
+    await deleteUser(userID);
 
-    res.status(200).json(mapPublicUser(deletedUser));
-  } catch (error) {
+    res.status(204).json();
+  } catch (error: unknown) {
     if (error instanceof NotFoundError) {
       return res.status(error.statusCode).json({ Error: error.message });
     }
@@ -87,12 +87,12 @@ router.delete("/:userID", async (req: Request, res: Response) => {
 });
 
 if (process.env.NODE_ENV === "development") {
-  //!!!only usable in development mode to prevent accidental deletion of all users in production!!!
+  //!!!only usable in dev mode to prevent accidental deletion of all users in production!!
   router.delete("/", async (req: Request, res: Response) => {
     try {
       await deleteAllUsers();
       res.status(200).json({ Success: "All users deleted" });
-    } catch (error: any) {
+    } catch (error: unknown) {
       res.status(500).json({ Error: "Failed to delete all users!" });
     }
   });
