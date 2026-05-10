@@ -2,9 +2,12 @@ import "dotenv/config";
 import express from "express";
 import config from "config";
 import { connectDatabase } from "./database/mongoose";
-import publicUsersRoute from "./endpoints/user/PublicUsersRoute";
+import publicUserRoute from "./endpoints/user/PublicUserRoute";
+import userRoute from "./endpoints/user/UserRoute";
 import morgan from "morgan";
 import { createUser, userExists } from "./endpoints/user/UserService";
+import authenticationRoute from "./endpoints/authentication/AuthenticationRoute";
+import { authMiddleware } from "./utils/authMiddleware";
 
 console.log("tokenKey:", config.get<string>("session.tokenKey"));
 
@@ -12,8 +15,10 @@ const port = config.get<number>("server.port");
 
 const app = express();
 app.use(express.json()); // registers middleware to parse json bodies and gives access to req.body in the routes
-app.use(morgan("dev")); // registers morgan middleware to log incoming requests in the console in dev format (method, url, status code, response time)
-app.use("/api/publicUsers", publicUsersRoute);
+app.use(morgan("dev")); // registers morgan middleware to log incoming requests in the console(method, url, status code, response time)
+app.use("/api/publicUsers", publicUserRoute);
+app.use("/api/authenticate", authenticationRoute);
+app.use("/api/users", authMiddleware, userRoute);
 
 app.get("/", (req, res) => {
   res.json({ message: "Ben's Server is running" });
