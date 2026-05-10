@@ -12,7 +12,7 @@ const router = express.Router();
 router.get("/", async (req: Request, res: Response) => {
   try {
     if (!req.user?.isAdministrator) {
-      return res.status(403).json({ Error: "Access denied!" });
+      return res.status(401).json({ Error: "Access denied!" });
     }
 
     const users: IUser[] = await getAllUsers();
@@ -26,7 +26,7 @@ router.get("/", async (req: Request, res: Response) => {
 // only allow users to access their own data, unless admin, then they can access all users??
 router.get("/:userID", async (req: Request, res: Response) => {
   if (req.user?.userID !== req.params.userID && !req.user?.isAdministrator) {
-    return res.status(403).json({ Error: "Access denied!" });
+    return res.status(401).json({ Error: "Access denied!" });
   }
 
   try {
@@ -46,7 +46,7 @@ router.get("/:userID", async (req: Request, res: Response) => {
 router.post("/", async (req: Request, res: Response) => {
   try {
     if (!req.user?.isAdministrator) {
-      return res.status(403).json({ Error: "Access denied!" });
+      return res.status(401).json({ Error: "Access denied!" });
     }
 
     const newUser: IUser = await createUser(req.body);
@@ -64,10 +64,13 @@ router.post("/", async (req: Request, res: Response) => {
 router.put("/:userID", async (req: Request, res: Response) => {
   try {
     if (req.user?.userID !== req.params.userID && !req.user?.isAdministrator) {
-      return res.status(403).json({ Error: "Access denied!" });
+      return res.status(401).json({ Error: "Access denied!" });
     }
 
     const userID: string = req.params.userID as string;
+    if (!req.user?.isAdministrator) {
+      req.body.isAdministrator = false; // prevent non-admin users from making themselves admin
+    }
     const updatedUser: IUser = await updateUser(userID, req.body);
 
     res.status(200).json(mapUser(updatedUser));
@@ -85,7 +88,7 @@ router.put("/:userID", async (req: Request, res: Response) => {
 router.delete("/:userID", async (req: Request, res: Response) => {
   try {
     if (!req.user?.isAdministrator) {
-      return res.status(403).json({ Error: "Access denied!" });
+      return res.status(401).json({ Error: "Access denied!" });
     }
 
     const userID: string = req.params.userID as string;
@@ -105,7 +108,7 @@ if (process.env.NODE_ENV === "development") {
   router.delete("/", async (req: Request, res: Response) => {
     try {
       if (!req.user?.isAdministrator) {
-        return res.status(403).json({ Error: "Access denied!" });
+        return res.status(401).json({ Error: "Access denied!" });
       }
 
       await deleteAllUsers();

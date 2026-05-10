@@ -19,7 +19,7 @@ router.get("/", async (req: Request, res: Response) => {
     const degreeCourses: IDegreeCourse[] = await getAllDegreeCourses(universityShortName);
     res.status(200).json(degreeCourses.map(mapDegreeCourse));
   } catch (error) {
-    res.status(500).json({ error: "failed to fetch degree courses" });
+    res.status(500).json({ Error: "failed to fetch degree courses" });
   }
 });
 
@@ -31,27 +31,27 @@ router.get("/:id", async (req: Request, res: Response) => {
     if (error instanceof NotFoundError) {
       return res.status(error.statusCode).json({ error: error.message });
     }
-    res.status(500).json({ error: "failed to fetch degree course" });
+    res.status(500).json({ Error: "failed to fetch degree course" });
   }
 });
 
 router.post("/", async (req: Request, res: Response) => {
   try {
     if (!req.user?.isAdministrator) {
-      return res.status(403).json({ Error: "Access denied!" });
+      return res.status(401).json({ Error: "Access denied!" });
     }
 
     const newDegreeCourse: IDegreeCourse = await createDegreeCourse(req.body);
     res.status(201).json(mapDegreeCourse(newDegreeCourse));
   } catch (error) {
-    res.status(500).json({ error: "failed to create degree course" });
+    res.status(500).json({ Error: "failed to create degree course" });
   }
 });
 
 router.put("/:id", async (req: Request, res: Response) => {
   try {
     if (!req.user?.isAdministrator) {
-      return res.status(403).json({ Error: "Access denied!" });
+      return res.status(401).json({ Error: "Access denied!" });
     }
 
     const updatedDegreeCourse: IDegreeCourse = await updateDegreeCourse(req.params.id as string, req.body);
@@ -60,23 +60,23 @@ router.put("/:id", async (req: Request, res: Response) => {
     if (error instanceof NotFoundError) {
       return res.status(error.statusCode).json({ error: error.message });
     }
-    res.status(500).json({ error: "failed to update degree course" });
+    res.status(500).json({ Error: "failed to update degree course" });
   }
 });
 
 router.delete("/:id", async (req: Request, res: Response) => {
   try {
     if (!req.user?.isAdministrator) {
-      return res.status(403).json({ Error: "Access denied!" });
+      return res.status(401).json({ Error: "Access denied!" });
     }
 
-    const deletedDegreeCourse: IDegreeCourse = await deleteDegreeCourse(req.params.id as string);
+    await deleteDegreeCourse(req.params.id as string);
     res.status(204).json();
   } catch (error) {
     if (error instanceof NotFoundError) {
       return res.status(error.statusCode).json({ error: error.message });
     }
-    res.status(500).json({ error: "failed to delete degree course" });
+    res.status(500).json({ Error: "failed to delete degree course" });
   }
 });
 
@@ -84,13 +84,13 @@ if (process.env.NODE_ENV === "development") {
   router.delete("/", async (req: Request, res: Response) => {
     try {
       if (!req.user?.isAdministrator) {
-        return res.status(403).json({ Error: "Access denied!" });
+        return res.status(401).json({ Error: "Access denied!" });
       }
 
       await deleteAllCourses();
       res.status(200).json({ message: "All degree courses deleted successfully!!" });
     } catch (error) {
-      res.status(500).json({ error: "failed to delete all degree courses!!" });
+      res.status(500).json({ Error: "failed to delete all degree courses!!" });
     }
   });
 }
