@@ -34,8 +34,7 @@ export async function createUser(userData: {
     throw new MissingInfoError("user id and password are required!!");
   }
 
-  if (await userExists(userID))
-    throw new DuplicateError(`User with ID ${userID} already exists!!!!`);
+  if (await userExists(userID)) throw new DuplicateError(`User with ID ${userID} already exists!!!!`);
 
   const newUser = new User(userData);
 
@@ -52,17 +51,14 @@ export async function updateUser(
   },
 ): Promise<IUser> {
   if ("userID" in updateData) {
-    throw new WrongInfoError(
-      "user id not allowed in body as it cannot be changed!",
-    );
+    throw new WrongInfoError("user id not allowed in body as it cannot be changed!");
   }
 
   const user: IUser = await getUserByUserID(userID);
 
   Object.assign(user, updateData);
-  await user.save();
 
-  return user;
+  return user.save();
 }
 
 export async function deleteUser(userID: string): Promise<IUser> {

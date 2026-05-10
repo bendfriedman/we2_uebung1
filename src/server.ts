@@ -8,6 +8,7 @@ import morgan from "morgan";
 import { createUser, userExists } from "./endpoints/user/UserService";
 import authenticationRoute from "./endpoints/authentication/AuthenticationRoute";
 import { authMiddleware } from "./utils/authMiddleware";
+import degreeCourseRoute from "./endpoints/degreeCourse/DegreeCourseRoute";
 
 console.log("tokenKey:", config.get<string>("session.tokenKey"));
 
@@ -19,6 +20,7 @@ app.use(morgan("dev")); // registers morgan middleware to log incoming requests 
 app.use("/api/publicUsers", publicUserRoute);
 app.use("/api/authenticate", authenticationRoute);
 app.use("/api/users", authMiddleware, userRoute);
+app.use("/api/degreeCourses", authMiddleware, degreeCourseRoute);
 
 app.get("/", (req, res) => {
   res.json({ message: "Ben's Server is running" });

@@ -6,7 +6,7 @@ const router = express.Router();
 router.get("/", async (req: Request, res: Response) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Basic ")) {
-    return res.status(400).json({ Error: "invalid auth header!" });
+    return res.status(400).json({ Error: "invalid or missingauthentication header!" });
   }
 
   const base64Credentials = authHeader.split(" ")[1];
