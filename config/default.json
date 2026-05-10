@@ -6,7 +6,7 @@
     "mongoUri": "mongodb://127.0.0.1:27017/we2-mongo"
   },
   "session": {
-    "tokenKey": "NEVER-USE-IN-PRODUCTION",
+    "tokenKey": "PULLS_SECRET_KEY_FROM_ENV_VARIABLE",
     "timeout": 3600
   }
 }
