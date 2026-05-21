@@ -9,6 +9,7 @@ import { createUser, userExists } from "./endpoints/user/UserService";
 import authenticationRoute from "./endpoints/authentication/AuthenticationRoute";
 import { authMiddleware } from "./utils/authMiddleware";
 import degreeCourseRoute from "./endpoints/degreeCourse/DegreeCourseRoute";
+import degreeCourseApplicationRoute from "./endpoints/degreeCourseApplication/DegreeCourseApplicationRoute";
 
 console.log("tokenKey:", config.get<string>("session.tokenKey"));
 
@@ -21,6 +22,11 @@ app.use("/api/publicUsers", publicUserRoute);
 app.use("/api/authenticate", authenticationRoute);
 app.use("/api/users", authMiddleware, userRoute);
 app.use("/api/degreeCourses", authMiddleware, degreeCourseRoute);
+app.use(
+  "/api/degreeCourseApplications",
+  authMiddleware,
+  degreeCourseApplicationRoute,
+);
 
 app.get("/", (req, res) => {
   res.json({ message: "Ben's Server is running" });
