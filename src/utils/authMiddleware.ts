@@ -41,3 +41,31 @@ export function authMiddleware(
     return;
   }
 }
+
+export function optionalAuthMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
+  if (req.headers.authorization) {
+    const token = req.headers.authorization.split(" ")[1];
+    const privateKey = config.get<string>("session.tokenKey");
+
+    jwt.verify(
+      token,
+      privateKey,
+      { algorithms: ["HS256"] },
+      (err, decodedToken) => {
+        if (!err) {
+          req.user = decodedToken as {
+            userID: string;
+            isAdministrator?: boolean;
+          };
+        }
+        return next();
+      },
+    );
+  } else {
+    return next();
+  }
+}

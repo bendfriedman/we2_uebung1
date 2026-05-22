@@ -7,7 +7,7 @@ import userRoute from "./endpoints/user/UserRoute";
 import morgan from "morgan";
 import { createUser, userExists } from "./endpoints/user/UserService";
 import authenticationRoute from "./endpoints/authentication/AuthenticationRoute";
-import { authMiddleware } from "./utils/authMiddleware";
+import { authMiddleware, optionalAuthMiddleware } from "./utils/authMiddleware";
 import degreeCourseRoute from "./endpoints/degreeCourse/DegreeCourseRoute";
 import degreeCourseApplicationRoute from "./endpoints/degreeCourseApplication/DegreeCourseApplicationRoute";
 import https from "https";
@@ -24,7 +24,7 @@ app.use(morgan("dev")); // registers morgan middleware to log incoming requests 
 app.use("/api/publicUsers", publicUserRoute);
 app.use("/api/authenticate", authenticationRoute);
 app.use("/api/users", authMiddleware, userRoute);
-app.use("/api/degreeCourses", degreeCourseRoute);
+app.use("/api/degreeCourses", optionalAuthMiddleware, degreeCourseRoute);
 app.use(
   "/api/degreeCourseApplications",
   authMiddleware,
