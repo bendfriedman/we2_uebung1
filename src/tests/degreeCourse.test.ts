@@ -46,6 +46,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await mongoose.disconnect();
+  // null check for mongoServer
   if (mongoServer) await mongoServer.stop();
 });
 
