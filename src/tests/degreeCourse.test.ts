@@ -113,7 +113,7 @@ describe("DegreeCourses", () => {
       .get("/api/degreeCourses")
       .set("Authorization", adminToken);
     expect(res.status).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body).toBeInstanceOf(Array);
     expect(res.body.length).toBeGreaterThan(0);
   });
 
@@ -137,7 +137,7 @@ describe("DegreeCourses", () => {
 
   test("Nicht existierenden Studiengang abrufen gibt 404", async () => {
     const res = await request(app)
-      .get("/api/degreeCourses/000000000000000000000000")
+      .get("/api/degreeCourses/9999999999999999999999999")
       .set("Authorization", adminToken);
     expect(res.status).toBe(404);
   });
@@ -185,7 +185,7 @@ describe("DegreeCourseApplications", () => {
     expect(res.status).toBe(409);
   });
 
-  test("Bewerbung für nicht existierenden Studiengang gibt Fehler", async () => {
+  test("Bewerbung für nicht existierenden Studiengang gibt keinen 201 zurück", async () => {
     const res = await request(app)
       .post("/api/degreeCourseApplications")
       .set("Authorization", manfredToken)
@@ -197,7 +197,7 @@ describe("DegreeCourseApplications", () => {
     expect(res.status).not.toBe(201);
   });
 
-  test("Normaler User kann keine fremde Bewerbung anlegen", async () => {
+  test("Normaler User kann keine Bewerbung für andere User anlegen", async () => {
     const res = await request(app)
       .post("/api/degreeCourseApplications")
       .set("Authorization", manfredToken)
@@ -233,6 +233,7 @@ describe("DegreeCourseApplications", () => {
       .get(`/api/degreeCourseApplications?degreeCourseID=${degreeCourseID}`)
       .set("Authorization", adminToken);
     expect(res.status).toBe(200);
+    expect(res.body).toBeInstanceOf(Array);
     expect(res.body.length).toBeGreaterThan(0);
   });
 
@@ -241,7 +242,7 @@ describe("DegreeCourseApplications", () => {
       .get(`/api/degreeCourses/${degreeCourseID}/degreeCourseApplications`)
       .set("Authorization", adminToken);
     expect(res.status).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body).toBeInstanceOf(Array);
   });
 
   test("Bewerbung updaten", async () => {
