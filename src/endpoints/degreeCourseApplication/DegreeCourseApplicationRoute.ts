@@ -110,16 +110,19 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 router.put("/:id", async (req: Request, res: Response) => {
-  if (!req.user?.isAdministrator) {
-    return res.status(403).json({ Error: "Access denied!" });
-  }
-
   try {
-    const updatedDegreeCourseApplication: IDegreeCourseApplication =
+    const application = await getDegreeCourseApplicationByID(
+      req.params.id as string,
+    );
+    if (
+      application.applicantUserID !== req.user?.userID &&
+      !req.user?.isAdministrator
+    ) {
+      return res.status(403).json({ Error: "Access denied!" });
+    }
+    const updated: IDegreeCourseApplication =
       await updateDegreeCourseApplication(req.params.id as string, req.body);
-    res
-      .status(200)
-      .json(mapDegreeCourseApplication(updatedDegreeCourseApplication));
+    res.status(200).json(mapDegreeCourseApplication(updated));
   } catch (error: unknown) {
     if (error instanceof NotFoundError) {
       return res.status(error.statusCode).json({ Error: error.message });
@@ -132,7 +135,13 @@ router.put("/:id", async (req: Request, res: Response) => {
 
 router.delete("/:id", async (req: Request, res: Response) => {
   try {
-    if (!req.user?.isAdministrator) {
+    const application = await getDegreeCourseApplicationByID(
+      req.params.id as string,
+    );
+    if (
+      application.applicantUserID !== req.user?.userID &&
+      !req.user?.isAdministrator
+    ) {
       return res.status(403).json({ Error: "Access denied!" });
     }
 

@@ -11,21 +11,33 @@ declare global {
   }
 }
 
-export function authMiddleware(req: Request, res: Response, next: NextFunction): void {
+export function authMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
   if (req.headers.authorization) {
     const token = req.headers.authorization.split(" ")[1];
     const privateKey = config.get<string>("session.tokenKey");
 
-    jwt.verify(token, privateKey, { algorithms: ["HS256"] }, (err, decodedToken) => {
-      if (err) {
-        res.status(500).json({ error: "Not Authorized" });
-        return;
-      }
-      req.user = decodedToken as { userID: string; isAdministrator?: boolean };
-      return next();
-    });
+    jwt.verify(
+      token,
+      privateKey,
+      { algorithms: ["HS256"] },
+      (err, decodedToken) => {
+        if (err) {
+          res.status(401).json({ error: "Not Authorized" });
+          return;
+        }
+        req.user = decodedToken as {
+          userID: string;
+          isAdministrator?: boolean;
+        };
+        return next();
+      },
+    );
   } else {
-    res.status(500).json({ error: "Not Authorized" });
+    res.status(401).json({ error: "Not Authorized" });
     return;
   }
 }

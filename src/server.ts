@@ -24,7 +24,7 @@ app.use(morgan("dev")); // registers morgan middleware to log incoming requests 
 app.use("/api/publicUsers", publicUserRoute);
 app.use("/api/authenticate", authenticationRoute);
 app.use("/api/users", authMiddleware, userRoute);
-app.use("/api/degreeCourses", authMiddleware, degreeCourseRoute);
+app.use("/api/degreeCourses", degreeCourseRoute);
 app.use(
   "/api/degreeCourseApplications",
   authMiddleware,
