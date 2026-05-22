@@ -137,7 +137,7 @@ describe("DegreeCourses", () => {
 
   test("Nicht existierenden Studiengang abrufen gibt 404", async () => {
     const res = await request(app)
-      .get("/api/degreeCourses/9999999999999999999999999")
+      .get("/api/degreeCourses/999999999999999999999999") //genau 24 Zeichen -> 12 Bytes x 2 Bytes hex), damit es nicht wegen ungültiger ID scheitert
       .set("Authorization", adminToken);
     expect(res.status).toBe(404);
   });
