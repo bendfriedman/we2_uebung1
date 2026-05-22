@@ -10,6 +10,8 @@ import {
 } from "./DegreeCourseService";
 import { mapDegreeCourse } from "./DegreeCourseMapper";
 import { NotFoundError } from "../../errors/NotFoundError";
+import { mapDegreeCourseApplication } from "../degreeCourseApplication/DegreeCourseApplicationMapper";
+import { getDegreeCourseApplicationsByDegreeCourseID } from "../degreeCourseApplication/DegreeCourseApplicationService";
 
 const router = express.Router();
 
@@ -38,6 +40,28 @@ router.get("/:id", async (req: Request, res: Response) => {
     res.status(500).json({ Error: "failed to fetch degree course" });
   }
 });
+
+router.get(
+  "/:id/degreeCourseApplications",
+  async (req: Request, res: Response) => {
+    if (!req.user?.isAdministrator) {
+      return res.status(403).json({ Error: "Access denied!" });
+    }
+    try {
+      const degreeCourseApplications =
+        await getDegreeCourseApplicationsByDegreeCourseID(
+          req.params.id as string,
+        );
+      res
+        .status(200)
+        .json(degreeCourseApplications.map(mapDegreeCourseApplication));
+    } catch (error) {
+      res.status(500).json({
+        Error: "failed to fetch degree course applications for degree course",
+      });
+    }
+  },
+);
 
 router.post("/", async (req: Request, res: Response) => {
   if (!req.user?.isAdministrator) {

@@ -1,6 +1,6 @@
 {
   "server": {
-    "port": 80
+    "port": 443
   },
   "db": {
     "mongoUri": "mongodb://127.0.0.1:27017/we2-mongo"

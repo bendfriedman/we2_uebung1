@@ -12,6 +12,7 @@ import {
 } from "./DegreeCourseApplicationService";
 import { NotFoundError } from "../../errors/NotFoundError";
 import { MissingInfoError } from "../../errors/MissingInfoError";
+import { DuplicateError } from "../../errors/DuplicateError";
 
 const router = express.Router();
 
@@ -33,7 +34,9 @@ router.get("/", async (req: Request, res: Response) => {
       .status(200)
       .json(degreeCourseApplications.map(mapDegreeCourseApplication));
   } catch (error: unknown) {
-    res.status(500).json({ Error: "failed to fetch get course applications" });
+    return res
+      .status(500)
+      .json({ Error: "failed to fetch get course applications" });
   }
 });
 
@@ -47,12 +50,11 @@ router.get("/myApplications", async (req: Request, res: Response) => {
       .json(degreeCourseApplications.map(mapDegreeCourseApplication));
   } catch (error: unknown) {
     if (error instanceof MissingInfoError) {
-      res.status(error.statusCode).json({ Error: error.message });
-    } else {
-      res
-        .status(500)
-        .json({ Error: "failed to fetch get course applications" });
+      return res.status(error.statusCode).json({ Error: error.message });
     }
+    return res
+      .status(500)
+      .json({ Error: "failed to fetch get course applications" });
   }
 });
 
@@ -67,17 +69,16 @@ router.get("/:id", async (req: Request, res: Response) => {
     res.status(200).json(mapDegreeCourseApplication(degreeCourseApplication));
   } catch (error: unknown) {
     if (error instanceof NotFoundError) {
-      res.status(error.statusCode).json({ Error: error.message });
-    } else {
-      res
-        .status(500)
-        .json({ Error: "failed to fetch get course application by id" });
+      return res.status(error.statusCode).json({ Error: error.message });
     }
+    return res
+      .status(500)
+      .json({ Error: "failed to fetch get course application by id" });
   }
 });
 
 router.post("/", async (req: Request, res: Response) => {
-  // wenn keine userID im body übergeben wird, dann userID aus dem token nehmen
+  // wenn keine userID im body übergeben, dann userID aus dem token nehmen und body ergänzen
   if (!req.body.applicantUserID) {
     req.body.applicantUserID = req.user?.userID;
   }
@@ -96,7 +97,13 @@ router.post("/", async (req: Request, res: Response) => {
       .status(201)
       .json(mapDegreeCourseApplication(newDegreeCourseApplication));
   } catch (error: unknown) {
-    res
+    if (error instanceof DuplicateError) {
+      return res.status(error.statusCode).json({ Error: error.message });
+    }
+    if (error instanceof NotFoundError) {
+      return res.status(error.statusCode).json({ Error: error.message });
+    }
+    return res
       .status(500)
       .json({ Error: "failed to create degree course application" });
   }
@@ -115,12 +122,11 @@ router.put("/:id", async (req: Request, res: Response) => {
       .json(mapDegreeCourseApplication(updatedDegreeCourseApplication));
   } catch (error: unknown) {
     if (error instanceof NotFoundError) {
-      res.status(error.statusCode).json({ Error: error.message });
-    } else {
-      res
-        .status(500)
-        .json({ Error: "failed to update degree course application" });
+      return res.status(error.statusCode).json({ Error: error.message });
     }
+    return res
+      .status(500)
+      .json({ Error: "failed to update degree course application" });
   }
 });
 
@@ -135,12 +141,11 @@ router.delete("/:id", async (req: Request, res: Response) => {
     res.status(204).json();
   } catch (error: unknown) {
     if (error instanceof NotFoundError) {
-      res.status(error.statusCode).json({ Error: error.message });
-    } else {
-      res
-        .status(500)
-        .json({ Error: "failed to delete degree course application" });
+      return res.status(error.statusCode).json({ Error: error.message });
     }
+    return res
+      .status(500)
+      .json({ Error: "failed to delete degree course application" });
   }
 });
 

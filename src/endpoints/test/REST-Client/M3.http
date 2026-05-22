@@ -216,3 +216,7 @@ Authorization: {{adminToken}}
 ### Löschen des Users
 DELETE  https://localhost/api/users/manfred
 Authorization: {{adminToken}}
+
+### Lösche alle Bewerbungen
+DELETE https://localhost/api/degreeCourseApplications
+Authorization: {{adminToken}}

@@ -1,9 +1,11 @@
+import { DuplicateError } from "../../errors/DuplicateError";
 import { MissingInfoError } from "../../errors/MissingInfoError";
 import { NotFoundError } from "../../errors/NotFoundError";
 import {
   IDegreeCourseApplication,
   DegreeCourseApplication,
 } from "./DegreeCourseApplicationModel";
+import { getDegreeCourseByID } from "../degreeCourse/DegreeCourseService";
 
 export async function getAllDegreeCourseApplications(
   degreeCourseID?: string,
@@ -50,8 +52,20 @@ export async function createDegreeCourseApplication(data: {
   targetPeriodYear: number;
   targetPeriodShortName: string;
 }): Promise<IDegreeCourseApplication> {
-  const degreeCourseApplication = new DegreeCourseApplication(data);
-  return await degreeCourseApplication.save();
+  try {
+    await getDegreeCourseByID(data.degreeCourseID);
+    const degreeCourseApplication = new DegreeCourseApplication(data);
+    return await degreeCourseApplication.save();
+  } catch (error: any) {
+    // MongoDB duplicate key error code
+    if (error.code === 11000) {
+      throw new DuplicateError(
+        `A degree course application for user ${data.applicantUserID} and degree course ${data.degreeCourseID} already exists!`,
+      );
+    }
+
+    throw error;
+  }
 }
 
 export async function updateDegreeCourseApplication(
