@@ -10,6 +10,7 @@ import authenticationRoute from "./endpoints/authentication/AuthenticationRoute"
 import { authMiddleware, optionalAuthMiddleware } from "./utils/authMiddleware";
 import degreeCourseRoute from "./endpoints/degreeCourse/DegreeCourseRoute";
 import degreeCourseApplicationRoute from "./endpoints/degreeCourseApplication/DegreeCourseApplicationRoute";
+import contactMessageRoute from "./endpoints/contactMessage/ContactMessageRoute";
 import https from "https";
 import fs from "fs";
 
@@ -30,6 +31,7 @@ app.use(
   authMiddleware,
   degreeCourseApplicationRoute,
 );
+app.use("/api/contactMessages", optionalAuthMiddleware, contactMessageRoute);
 
 app.get("/", (req, res) => {
   res.json({ message: "Ben's Server is running" });

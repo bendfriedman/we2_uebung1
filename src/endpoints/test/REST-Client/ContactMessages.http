@@ -1,0 +1,81 @@
+// Login als Admin
+###
+# @name loginAdminCorrect
+GET https://localhost/api/authenticate
+Authorization: Basic YWRtaW46MTIz
+
+@adminToken = {{loginAdminCorrect.response.headers.Authorization}}
+
+// POST ohne Login - Nachricht anlegen und Bestätigungsmail auslösen
+###
+# @name createContactMessage
+POST https://localhost/api/contactMessages
+Content-Type: application/json
+
+{
+    "senderName": "Lin Li",
+    "senderEmail": "benjamindfriedman@gmail.com",
+    "subject": "Frage zur Bewerbung",
+    "message": "Ich habe eine Frage zu meiner Bewerbung für den Studiengang Medieninformatik."
+}
+
+// GET alle Nachrichten - nur Admin
+###
+GET https://localhost/api/contactMessages
+Authorization: {{adminToken}}
+
+// GET alle Nachrichten ohne Token - sollte 403 liefern
+###
+GET https://localhost/api/contactMessages
+
+// GET einzelne Nachricht per ID - nur Admin
+###
+GET https://localhost/api/contactMessages/{{createContactMessage.response.body.id}}
+Authorization: {{adminToken}}
+
+// GET einzelne Nachricht ohne Token - sollte 403 liefern
+###
+GET https://localhost/api/contactMessages/{{createContactMessage.response.body.id}}
+
+// PUT Status auf "read" setzen - nur Admin
+###
+PUT https://localhost/api/contactMessages/{{createContactMessage.response.body.id}}
+Authorization: {{adminToken}}
+Content-Type: application/json
+
+{
+    "status": "read"
+}
+
+// PUT Status auf "answered" setzen - nur Admin
+###
+PUT https://localhost/api/contactMessages/{{createContactMessage.response.body.id}}
+Authorization: {{adminToken}}
+Content-Type: application/json
+
+{
+    "status": "answered"
+}
+
+// PUT ohne Token - sollte 403 liefern
+###
+PUT https://localhost/api/contactMessages/{{createContactMessage.response.body.id}}
+Content-Type: application/json
+
+{
+    "status": "read"
+}
+
+// DELETE einzelne Nachricht - nur Admin
+###
+DELETE https://localhost/api/contactMessages/{{createContactMessage.response.body.id}}
+Authorization: {{adminToken}}
+
+// DELETE einzelne Nachricht ohne Token - sollte 403 liefern
+###
+DELETE https://localhost/api/contactMessages/{{createContactMessage.response.body.id}}
+
+// Alle Nachrichten löschen - nur im dev-Modus
+###
+DELETE https://localhost/api/contactMessages
+Authorization: {{adminToken}}

@@ -9,6 +9,7 @@ let manfredToken: string;
 let susiToken: string;
 let degreeCourseID: string;
 let applicationID: string;
+let contactMessageID: string;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
@@ -259,5 +260,115 @@ describe("DegreeCourseApplications", () => {
       .delete(`/api/degreeCourseApplications/${applicationID}`)
       .set("Authorization", adminToken);
     expect(res.status).toBe(204);
+  });
+});
+
+describe("ContactMessages", () => {
+  test("POST ohne Token legt Nachricht an", async () => {
+    const res = await request(app).post("/api/contactMessages").send({
+      senderName: "Anna Mustermann",
+      senderEmail: "ben@friedman.com",
+      subject: "Testbetreff",
+      message: "Das ist eine Testnachricht.",
+    });
+    expect(res.status).toBe(201);
+    expect(res.body.status).toBe("new");
+    expect(res.body.senderName).toBe("Anna Mustermann");
+    contactMessageID = res.body.id;
+  });
+
+  test("POST mit Token legt Nachricht an", async () => {
+    const res = await request(app)
+      .post("/api/contactMessages")
+      .set("Authorization", manfredToken)
+      .send({
+        senderName: "Manfred Müller",
+        senderEmail: "manfred@example.com",
+        subject: "Noch eine Nachricht",
+        message: "Hallo welt!",
+      });
+    expect(res.status).toBe(201);
+  });
+
+  test("GET alle Nachrichten ohne Token gibt 403 zurück", async () => {
+    const res = await request(app).get("/api/contactMessages");
+    expect(res.status).toBe(403);
+  });
+
+  test("GET alle Nachrichten mit Admin-Token gibt Array zurück", async () => {
+    const res = await request(app)
+      .get("/api/contactMessages")
+      .set("Authorization", adminToken);
+    expect(res.status).toBe(200);
+    expect(res.body).toBeInstanceOf(Array);
+    expect(res.body.length).toBeGreaterThan(0);
+  });
+
+  test("GET einzelne Nachricht mit Admin-Token", async () => {
+    const res = await request(app)
+      .get(`/api/contactMessages/${contactMessageID}`)
+      .set("Authorization", adminToken);
+    expect(res.status).toBe(200);
+    expect(res.body.id).toBe(contactMessageID);
+  });
+
+  test("GET einzelne Nachricht ohne Token gibt 403 zurück", async () => {
+    const res = await request(app).get(
+      `/api/contactMessages/${contactMessageID}`,
+    );
+    expect(res.status).toBe(403);
+  });
+
+  test("GET nicht existierende Nachricht gibt 404 zurück", async () => {
+    const res = await request(app)
+      .get("/api/contactMessages/999999999999999999999999")
+      .set("Authorization", adminToken);
+    expect(res.status).toBe(404);
+  });
+
+  test("PUT Status auf 'read' mit Admin-Token", async () => {
+    const res = await request(app)
+      .put(`/api/contactMessages/${contactMessageID}`)
+      .set("Authorization", adminToken)
+      .send({ status: "read" });
+    expect(res.status).toBe(200);
+    expect(res.body.status).toBe("read");
+  });
+
+  test("PUT Status auf 'answered' mit Admin-Token", async () => {
+    const res = await request(app)
+      .put(`/api/contactMessages/${contactMessageID}`)
+      .set("Authorization", adminToken)
+      .send({ status: "answered" });
+    expect(res.status).toBe(200);
+    expect(res.body.status).toBe("answered");
+  });
+
+  test("PUT ohne Token gibt 403 zurück", async () => {
+    const res = await request(app)
+      .put(`/api/contactMessages/${contactMessageID}`)
+      .send({ status: "read" });
+    expect(res.status).toBe(403);
+  });
+
+  test("DELETE ohne Token gibt 403 zurück", async () => {
+    const res = await request(app).delete(
+      `/api/contactMessages/${contactMessageID}`,
+    );
+    expect(res.status).toBe(403);
+  });
+
+  test("DELETE mit Admin-Token löscht Nachricht", async () => {
+    const res = await request(app)
+      .delete(`/api/contactMessages/${contactMessageID}`)
+      .set("Authorization", adminToken);
+    expect(res.status).toBe(204);
+  });
+
+  test("GET gelöschte Nachricht gibt 404 zurück", async () => {
+    const res = await request(app)
+      .get(`/api/contactMessages/${contactMessageID}`)
+      .set("Authorization", adminToken);
+    expect(res.status).toBe(404);
   });
 });
