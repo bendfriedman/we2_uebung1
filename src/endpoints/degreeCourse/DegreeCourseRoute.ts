@@ -35,7 +35,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     res.status(200).json(mapDegreeCourse(degreeCourse));
   } catch (error) {
     if (error instanceof NotFoundError) {
-      return res.status(error.statusCode).json({ error: error.message });
+      return res.status(error.statusCode).json({ Error: error.message });
     }
     res.status(500).json({ Error: "failed to fetch degree course" });
   }
@@ -87,7 +87,7 @@ router.put("/:id", async (req: Request, res: Response) => {
     res.status(200).json(mapDegreeCourse(updatedDegreeCourse));
   } catch (error) {
     if (error instanceof NotFoundError) {
-      return res.status(error.statusCode).json({ error: error.message });
+      return res.status(error.statusCode).json({ Error: error.message });
     }
     res.status(500).json({ Error: "failed to update degree course" });
   }
@@ -102,7 +102,7 @@ router.delete("/:id", async (req: Request, res: Response) => {
     res.status(204).json();
   } catch (error) {
     if (error instanceof NotFoundError) {
-      return res.status(error.statusCode).json({ error: error.message });
+      return res.status(error.statusCode).json({ Error: error.message });
     }
     res.status(500).json({ Error: "failed to delete degree course" });
   }
