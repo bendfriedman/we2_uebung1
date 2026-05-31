@@ -26,7 +26,7 @@ export function authMiddleware(
       { algorithms: ["HS256"] },
       (err, decodedToken) => {
         if (err) {
-          res.status(401).json({ error: "Not Authorized" });
+          res.status(401).json({ Error: "Not Authorized" });
           return;
         }
         req.user = decodedToken as {
@@ -37,7 +37,7 @@ export function authMiddleware(
       },
     );
   } else {
-    res.status(401).json({ error: "Not Authorized" });
+    res.status(401).json({ Error: "Not Authorized" });
     return;
   }
 }
