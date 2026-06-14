@@ -1,0 +1,10 @@
+### hello world test
+GET https://localhost/api/abnahme/
+
+### abnahme test
+GET https://localhost/api/abnahme/getAdmins
+Authorization: Basic admin:123
+
+### falscher test
+GET https://localhost/api/abnahme/getAdmins
+Authorization: Basic admin:1234

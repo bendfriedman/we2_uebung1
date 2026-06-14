@@ -11,6 +11,7 @@ import { authMiddleware, optionalAuthMiddleware } from "./utils/authMiddleware";
 import degreeCourseRoute from "./endpoints/degreeCourse/DegreeCourseRoute";
 import degreeCourseApplicationRoute from "./endpoints/degreeCourseApplication/DegreeCourseApplicationRoute";
 import contactMessageRoute from "./endpoints/contactMessage/ContactMessageRoute";
+import abnahmeRoute from "./endpoints/abnahme/abnahmeRoute";
 import https from "https";
 import fs from "fs";
 
@@ -23,6 +24,7 @@ const app = express();
 app.use(express.json()); // registers middleware to parse json bodies and gives access to req.body in the routes
 app.use(morgan("dev")); // registers morgan middleware to log incoming requests in the console(method, url, status code, response time)
 app.use("/api/publicUsers", publicUserRoute);
+app.use("/api/abnahme", abnahmeRoute);
 app.use("/api/authenticate", authenticationRoute);
 app.use("/api/users", authMiddleware, userRoute);
 app.use("/api/degreeCourses", optionalAuthMiddleware, degreeCourseRoute);
