@@ -14,6 +14,7 @@ import contactMessageRoute from "./endpoints/contactMessage/ContactMessageRoute"
 import abnahmeRoute from "./endpoints/abnahme/abnahmeRoute";
 import https from "https";
 import fs from "fs";
+import cors from "cors";
 
 console.log("tokenKey:", config.get<string>("session.tokenKey"));
 
@@ -21,6 +22,11 @@ const port = config.get<number>("server.port");
 
 const app = express();
 
+app.use(
+  cors({
+    exposedHeaders: ["Authorization"],
+  }),
+); // exposes the Authorization response header to the browser, required for the frontend to read the JWT token from the response
 app.use(express.json()); // registers middleware to parse json bodies and gives access to req.body in the routes
 app.use(morgan("dev")); // registers morgan middleware to log incoming requests in the console(method, url, status code, response time)
 app.use("/api/publicUsers", publicUserRoute);
@@ -28,11 +34,7 @@ app.use("/api/abnahme", abnahmeRoute);
 app.use("/api/authenticate", authenticationRoute);
 app.use("/api/users", authMiddleware, userRoute);
 app.use("/api/degreeCourses", optionalAuthMiddleware, degreeCourseRoute);
-app.use(
-  "/api/degreeCourseApplications",
-  authMiddleware,
-  degreeCourseApplicationRoute,
-);
+app.use("/api/degreeCourseApplications", authMiddleware, degreeCourseApplicationRoute);
 app.use("/api/contactMessages", optionalAuthMiddleware, contactMessageRoute);
 
 app.get("/", (req, res) => {
