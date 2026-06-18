@@ -57,6 +57,8 @@ async function startServer() {
       await createUser({
         userID: "admin",
         password: "123",
+        firstName: "Admin",
+        lastName: "User",
         isAdministrator: true,
       });
     }

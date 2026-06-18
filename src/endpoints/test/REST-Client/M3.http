@@ -42,7 +42,8 @@ Content-Type: application/json
 
 {
     "firstName": "Manfred",
-    "lastName": "Schreiber"
+    "lastName": "Schreiber",
+    "password": "456"
 }
 
 ### Auflisten aller Nutzer mit Token
@@ -219,4 +220,12 @@ Authorization: {{adminToken}}
 
 ### Lösche alle Bewerbungen
 DELETE https://localhost/api/degreeCourseApplications
+Authorization: {{adminToken}}
+
+### DELETE all users
+DELETE https://localhost/api/users
+Authorization: {{adminToken}}
+
+### Auflisten aller Nutzer mit Token(Admin)
+GET https://localhost/api/users
 Authorization: {{adminToken}}
