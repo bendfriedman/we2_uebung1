@@ -34,7 +34,11 @@ app.use("/api/abnahme", abnahmeRoute);
 app.use("/api/authenticate", authenticationRoute);
 app.use("/api/users", authMiddleware, userRoute);
 app.use("/api/degreeCourses", optionalAuthMiddleware, degreeCourseRoute);
-app.use("/api/degreeCourseApplications", authMiddleware, degreeCourseApplicationRoute);
+app.use(
+  "/api/degreeCourseApplications",
+  authMiddleware,
+  degreeCourseApplicationRoute,
+);
 app.use("/api/contactMessages", optionalAuthMiddleware, contactMessageRoute);
 
 app.get("/", (req, res) => {
@@ -61,6 +65,11 @@ async function startServer() {
         lastName: "User",
         isAdministrator: true,
       });
+      console.log(
+        "Admin user created with username 'admin' and password '123'",
+      );
+    } else {
+      console.log("Admin user already exists, skipping creation");
     }
   } catch (error) {
     throw new Error("Failed to create admin user!!");
